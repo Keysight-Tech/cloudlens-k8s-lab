@@ -1,14 +1,64 @@
 # CloudLens Kubernetes Visibility Lab Guide
 
-## Complete walkthrough: AWS setup, infrastructure deployment, Keysight product configuration, and hands-on lab exercises
+### Complete walkthrough: AWS setup, infrastructure deployment, Keysight product configuration, and hands-on lab exercises
+
+This lab teaches you to deploy and operate **Keysight CloudLens** for Kubernetes network visibility on AWS. You'll provision an EKS cluster, install CloudLens sensors, configure traffic tapping through **Keysight Vision One (KVO)**, and forward mirrored traffic through a **Virtual Packet Broker (vPB)** to analysis tools like Wireshark and tcpdump.
 
 ---
 
-# Part 1: AWS Setup
+## Table of Contents
+
+- [Architecture Diagram](#architecture-diagram)
+- **Part 1: Prerequisites**
+  - [1.1 AWS Marketplace Subscriptions](#11-aws-marketplace-subscriptions)
+  - [1.2 Create an EC2 Key Pair](#12-create-an-ec2-key-pair)
+  - [1.3 Check AWS Service Quotas](#13-check-aws-service-quotas)
+  - [1.4 Configure AWS CLI](#14-configure-aws-cli)
+  - [1.5 Install Required Tools](#15-install-required-tools)
+- **Part 2: Deploy the Lab**
+  - [2.1 Clone and Configure](#21-clone-and-configure)
+  - [2.2 Deploy with Terraform](#22-deploy-with-terraform)
+  - [2.3 Wait for Initialization](#23-wait-for-initialization)
+  - [2.4 Configure kubectl for EKS](#24-configure-kubectl-for-eks)
+  - [2.5 Deploy Sample Applications to EKS](#25-deploy-sample-applications-to-eks)
+- **Part 3: Keysight Product Setup**
+  - [3.1 Log In to CLMS](#31-log-in-to-clms-cloudlens-manager)
+  - [3.2 Create KVO User on CLMS](#32-create-kvo-user-on-clms)
+  - [3.3 Log In to KVO](#33-log-in-to-kvo-keysight-vision-one)
+  - [3.4 Register CLMS in KVO Inventory](#34-register-clms-in-kvo-inventory)
+  - [3.5 Activate Licenses](#35-activate-licenses)
+  - [3.6 Connect to vPB](#36-connect-to-vpb-virtual-packet-broker)
+- **Part 4: Lab Exercises**
+  - [Exercise 1: Install CloudLens Sensor (DaemonSet)](#exercise-1-install-cloudlens-sensor-on-eks-daemonset)
+  - [Exercise 2: KVO Visibility Configuration](#exercise-2-kvo-visibility-configuration)
+  - [Exercise 3: Verify Mirrored Traffic](#exercise-3-verify-mirrored-traffic-on-tool-vms)
+  - [Exercise 4: vPB Traffic Forwarding](#exercise-4-vpb-traffic-forwarding)
+  - [Exercise 5: Sidecar Sensor (Advanced)](#exercise-5-sidecar-sensor-installation-advanced)
+- **Part 5: Reference**
+  - [Troubleshooting](#troubleshooting)
+  - [Cost Management](#cost-management)
+  - [Uninstall / Cleanup](#uninstall--cleanup)
+  - [Lab Environment Summary](#lab-environment-summary)
+  - [SSH Quick Reference](#ssh-quick-reference)
 
 ---
 
-## 1.1 AWS Account Prerequisites
+## Architecture Diagram
+
+![CloudLens Kubernetes Visibility Architecture](docs/images/architecture-diagram.png)
+
+**Traffic Flow:**
+1. **Deploy** - KVO pushes monitoring policies to CloudLens Manager
+2. **Tap & Mirror** - CloudLens sensors (DaemonSet or Sidecar) capture pod traffic (North-South + East-West)
+3. **Encap** - Mirrored traffic is VXLAN-encapsulated and sent to the analysis plane
+4. **Filter** - Virtual Packet Broker performs traffic de-duplication, header stripping, and filtering
+5. **Deliver** - Filtered traffic is forwarded via VXLAN/GRE to enterprise tools (Wireshark, tcpdump, threat detection)
+
+---
+
+# Part 1: Prerequisites
+
+## 1.1 AWS Marketplace Subscriptions
 
 Before deploying, ensure your AWS account has:
 
@@ -80,7 +130,7 @@ Click **Create key pair**. The `.pem` file will **download automatically to your
 mv ~/Downloads/cloudlens-lab.pem ~/.ssh/
 
 # Restrict permissions (required for SSH to accept it)
-chmod 400 ~/Downloads/cloudlens-lab.pem
+chmod 400 ~/.ssh/cloudlens-lab.pem
 ```
 
 ---
@@ -118,16 +168,11 @@ aws sts get-caller-identity --profile cloudlens-lab
 
 ---
 
-# Part 2: Deploy the Lab
-
----
-
-## 2.1 Install Required Tools
+## 1.5 Install Required Tools
 
 | Tool | Install (macOS) | Install (Windows) | Verify |
 |------|----------------|-------------------|--------|
 | **Terraform** | `brew install terraform` | `choco install terraform` | `terraform version` |
-| **AWS CLI** | `brew install awscli` | `choco install awscli` | `aws --version` |
 | **kubectl** | `brew install kubectl` | `choco install kubernetes-cli` | `kubectl version --client` |
 | **Helm** | `brew install helm` | `choco install kubernetes-helm` | `helm version` |
 | **Docker** | `brew install --cask docker` | `choco install docker-desktop` | `docker --version` |
@@ -136,7 +181,9 @@ aws sts get-caller-identity --profile cloudlens-lab
 
 ---
 
-## 2.2 Clone and Configure
+# Part 2: Deploy the Lab
+
+## 2.1 Clone and Configure
 
 ```bash
 # Clone the repo
@@ -168,7 +215,7 @@ use_elastic_ips = true
 
 ---
 
-## 2.3 Deploy with Terraform
+## 2.2 Deploy with Terraform
 
 ```bash
 # Initialize Terraform (downloads providers)
@@ -198,16 +245,11 @@ tool_windows_ip = "35.xx.xx.xx"
 eks_cluster_name = "cloudlens-lab-eks-cluster"
 ```
 
-**Save these IPs** - you'll need them throughout the lab.
-
-To see outputs again anytime:
-```bash
-terraform output
-```
+**Save these IPs** - you'll need them throughout the lab. Run `terraform output` at any time to see them again.
 
 ---
 
-## 2.4 Wait for Initialization
+## 2.3 Wait for Initialization
 
 Products need time to fully boot after the instances launch:
 
@@ -220,7 +262,7 @@ Products need time to fully boot after the instances launch:
 
 ---
 
-## 2.5 Configure kubectl for EKS
+## 2.4 Configure kubectl for EKS
 
 ```bash
 # Configure kubectl to connect to your EKS cluster
@@ -238,7 +280,7 @@ kubectl get pods -A
 
 ---
 
-## 2.6 Deploy Sample Applications to EKS
+## 2.5 Deploy Sample Applications to EKS
 
 Deploy nginx as a sample workload that CloudLens will monitor:
 
@@ -266,8 +308,6 @@ curl http://$NGINX_URL
 ---
 
 # Part 3: Keysight Product Setup
-
----
 
 ## 3.1 Log In to CLMS (CloudLens Manager)
 
@@ -394,8 +434,6 @@ The vPB has three network interfaces:
 ---
 
 # Part 4: Lab Exercises
-
----
 
 ## Exercise 1: Install CloudLens Sensor on EKS (DaemonSet)
 
@@ -744,90 +782,6 @@ kubectl delete deployment nginx-cloudlens-sidecar -n cloudlens-demo
 
 # Part 5: Reference
 
----
-
-## Your Lab Environment Summary
-
-After deployment, your lab contains:
-
-| Resource | Purpose | Access |
-|----------|---------|--------|
-| **CLMS** | CloudLens Manager - sensor management | `https://<CLMS_IP>` (admin / Cl0udLens@dm!n) |
-| **KVO** | Vision One - visibility orchestration | `https://<KVO_IP>` (admin / admin) |
-| **vPB** | Virtual Packet Broker - traffic forwarding | `ssh admin@<VPB_IP>` (admin / ixia) |
-| **Ubuntu VM** | Tapped Linux workload | `ssh -i <key> ubuntu@<UBUNTU_IP>` |
-| **Windows VM** | Tapped Windows workload (IIS) | RDP to `<WINDOWS_IP>` |
-| **Linux Tool VM** | Traffic analysis (tcpdump) | `ssh -i <key> ubuntu@<TOOL_LINUX_IP>` |
-| **Windows Tool VM** | Traffic analysis (Wireshark) | RDP to `<TOOL_WINDOWS_IP>` |
-| **EKS Cluster** | Kubernetes workloads + CloudLens sensors | `kubectl` via kubeconfig |
-
-> Run `terraform output` at any time to see all IPs and access details.
-
----
-
-## SSH Quick Reference
-
-```bash
-# Set your key path
-KEY=~/Downloads/cloudlens-lab.pem
-
-# Linux Tool VM
-ssh -i $KEY ubuntu@<TOOL_LINUX_IP>
-
-# Ubuntu Workload VM
-ssh -i $KEY ubuntu@<UBUNTU_IP>
-
-# vPB (password: ixia)
-ssh admin@<VPB_IP>
-
-# Windows Tool VM - use RDP client
-open rdp://Administrator@<TOOL_WINDOWS_IP>
-```
-
----
-
-## Uninstall / Cleanup
-
-### Remove CloudLens Sensor from EKS
-
-```bash
-# Remove DaemonSet
-helm uninstall cloudlens-agent --namespace cloudlens-demo
-
-# Remove Sidecar (if deployed)
-kubectl delete deployment nginx-cloudlens-sidecar -n cloudlens-demo
-```
-
-### Destroy All AWS Resources
-
-```bash
-# Preview what will be destroyed
-terraform plan -destroy
-
-# Destroy everything (type 'yes' when prompted)
-terraform destroy
-```
-
-> **Warning:** This permanently deletes all lab resources including VMs, EKS cluster, and VPC.
-
----
-
-## Cost Management
-
-Stop VMs when not in use to reduce costs:
-
-```bash
-# Stop all lab instances
-./scripts/stop-all.sh
-
-# Start them back up
-./scripts/start-all.sh
-```
-
-> **EKS control plane** charges (~$73/month) continue even when nodes are stopped. Use `terraform destroy` if you won't need the lab for an extended period.
-
----
-
 ## Troubleshooting
 
 ### Cannot access CLMS/KVO UI
@@ -836,7 +790,7 @@ Stop VMs when not in use to reduce costs:
 - Verify instance is running: `aws ec2 describe-instance-status --profile cloudlens-lab`
 
 ### SSH connection refused
-- Verify key permissions: `chmod 400 ~/Downloads/cloudlens-lab.pem`
+- Verify key permissions: `chmod 400 ~/.ssh/cloudlens-lab.pem`
 - Check instance is running
 - Verify correct username: `ubuntu` (Ubuntu), `admin` (vPB), `ec2-user` (RHEL)
 
@@ -874,16 +828,85 @@ Check for insufficient resources or scheduling constraints.
 
 ---
 
-## Architecture Diagram
+## Cost Management
 
-![CloudLens Kubernetes Visibility Architecture](docs/images/architecture-diagram.png)
+Stop VMs when not in use to reduce costs:
 
-**Traffic Flow:**
-1. **Deploy** - KVO pushes monitoring policies to CloudLens Manager
-2. **Tap & Mirror** - CloudLens sensors (DaemonSet or Sidecar) capture pod traffic (North-South + East-West)
-3. **Encap** - Mirrored traffic is VXLAN-encapsulated and sent to the analysis plane
-4. **Filter** - Virtual Packet Broker performs traffic de-duplication, header stripping, and filtering
-5. **Deliver** - Filtered traffic is forwarded via VXLAN/GRE to enterprise tools (Wireshark, tcpdump, threat detection)
+```bash
+# Stop all lab instances
+./scripts/stop-all.sh
+
+# Start them back up
+./scripts/start-all.sh
+```
+
+> **EKS control plane** charges (~$73/month) continue even when nodes are stopped. Use `terraform destroy` if you won't need the lab for an extended period.
+
+---
+
+## Uninstall / Cleanup
+
+### Remove CloudLens Sensor from EKS
+
+```bash
+# Remove DaemonSet
+helm uninstall cloudlens-agent --namespace cloudlens-demo
+
+# Remove Sidecar (if deployed)
+kubectl delete deployment nginx-cloudlens-sidecar -n cloudlens-demo
+```
+
+### Destroy All AWS Resources
+
+```bash
+# Preview what will be destroyed
+terraform plan -destroy
+
+# Destroy everything (type 'yes' when prompted)
+terraform destroy
+```
+
+> **Warning:** This permanently deletes all lab resources including VMs, EKS cluster, and VPC.
+
+---
+
+## Lab Environment Summary
+
+After deployment, your lab contains:
+
+| Resource | Purpose | Access |
+|----------|---------|--------|
+| **CLMS** | CloudLens Manager - sensor management | `https://<CLMS_IP>` (admin / Cl0udLens@dm!n) |
+| **KVO** | Vision One - visibility orchestration | `https://<KVO_IP>` (admin / admin) |
+| **vPB** | Virtual Packet Broker - traffic forwarding | `ssh admin@<VPB_IP>` (admin / ixia) |
+| **Ubuntu VM** | Tapped Linux workload | `ssh -i <key> ubuntu@<UBUNTU_IP>` |
+| **Windows VM** | Tapped Windows workload (IIS) | RDP to `<WINDOWS_IP>` |
+| **Linux Tool VM** | Traffic analysis (tcpdump) | `ssh -i <key> ubuntu@<TOOL_LINUX_IP>` |
+| **Windows Tool VM** | Traffic analysis (Wireshark) | RDP to `<TOOL_WINDOWS_IP>` |
+| **EKS Cluster** | Kubernetes workloads + CloudLens sensors | `kubectl` via kubeconfig |
+
+> Run `terraform output` at any time to see all IPs and access details.
+
+---
+
+## SSH Quick Reference
+
+```bash
+# Set your key path
+KEY=~/Downloads/cloudlens-lab.pem
+
+# Linux Tool VM
+ssh -i $KEY ubuntu@<TOOL_LINUX_IP>
+
+# Ubuntu Workload VM
+ssh -i $KEY ubuntu@<UBUNTU_IP>
+
+# vPB (password: ixia)
+ssh admin@<VPB_IP>
+
+# Windows Tool VM - use RDP client
+open rdp://Administrator@<TOOL_WINDOWS_IP>
+```
 
 ---
 
