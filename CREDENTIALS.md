@@ -6,18 +6,16 @@ All products are deployed with default credentials. **Change these immediately a
 
 | Product | URL/Access | Username | Password |
 |---------|-----------|----------|----------|
-| **CLMS** (CloudLens Manager) | `https://<CLMS_IP>` | `admin` | `<CLMS_PASSWORD>` |
+| **CLMS** (CloudLens Manager) | `https://<CLMS_IP>` | `admin` | `Cl0udLens@dm!n` |
 | **KVO** (Vision One) | `https://<KVO_IP>` | `admin` | `admin` |
-| **vPB** (Virtual Packet Broker) | `ssh admin@<VPB_IP>` | `admin` | `<VPB_PASSWORD>` |
-| **CyPerf Controller** (optional) | `https://<CYPERF_IP>` | `admin` | `<CYPERF_PASSWORD>` |
+| **vPB** (Virtual Packet Broker) | `ssh admin@<VPB_IP>` | `admin` | `ixia` |
 
 ## VMs
 
 | VM | Access | Username | Password |
 |----|--------|----------|----------|
 | **Ubuntu** | SSH (key-based) | `ubuntu` | Use SSH key |
-| **RHEL** | SSH (key-based) | `ec2-user` | Use SSH key |
-| **Windows Tool** (Wireshark) | RDP `:3389` | `Administrator` | `<WINDOWS_TOOL_PASSWORD>` |
+| **Windows Tool** (Wireshark) | RDP `:3389` | `Administrator` | From terraform output |
 | **Windows Tapped** | RDP `:3389` | `Administrator` | Decrypt via AWS CLI |
 
 ### Decrypting Windows Tapped VM Password
@@ -25,8 +23,8 @@ All products are deployed with default credentials. **Change these immediately a
 ```bash
 aws ec2 get-password-data \
   --instance-id <INSTANCE_ID> \
-  --priv-launch-key ~/path/to/your-key.pem \
-  --profile your-aws-profile
+  --priv-launch-key ~/.ssh/cloudlens-lab.pem \
+  --profile cloudlens-lab
 ```
 
 ## License Keys
@@ -44,4 +42,3 @@ License keys are required for KVO, CLMS, and vPB. Contact your Keysight represen
 1. Log in to each product using the default credentials above
 2. Change all default passwords immediately
 3. Apply license keys
-4. Run `./scripts/post-deploy.sh` to generate lab guides with actual IPs

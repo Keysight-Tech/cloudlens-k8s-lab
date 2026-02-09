@@ -119,7 +119,7 @@ variable "rhel_enabled" {
 }
 
 variable "ubuntu_workload_enabled" {
-  description = "Enable Ubuntu workload VM (disable if CyPerf generates traffic)"
+  description = "Enable Ubuntu workload VM"
   type        = bool
   default     = true
 }
