@@ -29,6 +29,7 @@ This lab teaches you to deploy and operate **Keysight CloudLens** for Kubernetes
   - [3.4 Register CLMS in KVO Inventory](#34-register-clms-in-kvo-inventory)
   - [3.5 Activate Licenses](#35-activate-licenses)
   - [3.6 Connect to vPB](#36-connect-to-vpb-virtual-packet-broker)
+  - [3.7 Activate CyPerf License](#37-activate-cyperf-license)
 - **Part 4: Lab Exercises**
   - [Exercise 1: Install CloudLens Sensor (DaemonSet)](#exercise-1-install-cloudlens-sensor-on-eks-daemonset)
   - [Exercise 2: KVO Visibility Configuration](#exercise-2-kvo-visibility-configuration)
@@ -447,6 +448,48 @@ The vPB has three network interfaces:
 | **Management** (eth0) | Admin access - the IP you SSH to |
 | **Ingress** (eth1) | Traffic collection from workloads |
 | **Egress** (eth2) | Traffic forwarding to monitoring tools |
+
+---
+
+## 3.7 Activate CyPerf License
+
+If you deployed CyPerf (`cyperf_enabled = true`), activate its license. The CyPerf Controller and K8s agents are deployed automatically by Terraform - the only manual step is license activation.
+
+### Step 1: Log in to CyPerf Controller
+
+Open the CyPerf Controller UI in your browser:
+
+```
+https://<CYPERF_CONTROLLER_PUBLIC_IP>
+```
+
+Log in with:
+
+| Field | Value |
+|-------|-------|
+| **Username** | `admin` |
+| **Password** | `CyPerf&Keysight#1` |
+
+![CyPerf Login](docs/images/cyperf-login.png)
+
+### Step 2: Navigate to License Manager
+
+1. Click the **Settings** gear icon (top-right)
+2. Expand **Licensing**
+3. Click **License Manager...**
+
+![CyPerf License Manager Navigation](docs/images/cyperf-license-manager.png)
+
+### Step 3: Activate License
+
+1. Click **Activate licenses** on the left
+2. In the **"Enter License Data"** field, paste your CyPerf activation codes
+3. Click **Load data** to parse the codes
+4. Review the products and quantities, then click **Activate**
+
+![CyPerf Activate License](docs/images/cyperf-activate-license.png)
+
+After activation, the CyPerf test session (auto-configured by Terraform) will be ready to start from the Dashboard.
 
 ---
 
