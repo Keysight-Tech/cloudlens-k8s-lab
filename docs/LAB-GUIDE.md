@@ -531,11 +531,15 @@ Before creating a monitoring policy, you need to define your tool destinations.
 
 ![KVO Monitoring Policy detail](images/32-kvo-monitoring-policy-detail.png)
 
-4. Save and **Commit**
+4. **Save and Commit** - Click the **Commit** button at the top to apply your changes
 
 After committing, you'll see your complete traffic flow in the **DIAGRAM** view:
 
 ![KVO Monitoring Policies diagram - sources to policies to destinations](images/31-kvo-monitoring-policies-diagram.png)
+
+The diagram shows the end-to-end visibility pipeline: **Traffic Sources** (Cloud Collections) on the left, **Monitoring Policies** in the center, and **Traffic Destinations** (Remote Tools) on the right. Each policy connects a source to a destination, running **Active | Continuously**.
+
+![KVO Monitoring Policies complete - all policies committed](images/33-kvo-monitoring-policies-complete.png)
 
 > **Important:** KVO sends mirrored traffic via VXLAN to your tool VM's **private IP** over the internal VPC network.
 
