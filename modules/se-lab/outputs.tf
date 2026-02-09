@@ -25,6 +25,11 @@ output "vpc_cidr" {
   value       = aws_vpc.main.cidr_block
 }
 
+output "route_table_id" {
+  description = "Main route table ID"
+  value       = aws_route_table.main.id
+}
+
 output "vpc_peering_id" {
   description = "VPC peering connection ID to shared EKS VPC"
   value       = var.shared_eks_enabled ? aws_vpc_peering_connection.shared_eks[0].id : ""

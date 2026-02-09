@@ -18,6 +18,10 @@ vpb_enabled     = true
 eks_enabled     = true
 use_elastic_ips = true
 
+# CyPerf (optional - L4-7 traffic generation, requires AWS Marketplace subscription)
+# cyperf_enabled                  = true
+# cyperf_controller_instance_type = "c5.2xlarge"
+
 # Optional instance sizing (uncomment to override defaults)
 # clms_instance_type    = "t3.xlarge"
 # kvo_instance_type     = "t3.2xlarge"

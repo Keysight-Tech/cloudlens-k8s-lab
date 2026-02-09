@@ -2,6 +2,12 @@
 # OUTPUTS
 # ============================================================================
 
+# Deployment
+output "deployment_prefix" {
+  description = "Deployment prefix used for all resources"
+  value       = var.deployment_prefix
+}
+
 # Keysight Product URLs
 output "clms_url" {
   description = "CloudLens Manager UI URL"
@@ -81,4 +87,25 @@ output "ssh_commands" {
 output "all_instance_ids" {
   description = "All EC2 instance IDs (for stop/start scripts)"
   value       = module.lab.all_instance_ids
+}
+
+# CyPerf (conditional)
+output "cyperf_controller_public_ip" {
+  description = "CyPerf Controller public IP"
+  value       = var.cyperf_enabled ? aws_eip.cyperf_controller[0].public_ip : null
+}
+
+output "cyperf_controller_private_ip" {
+  description = "CyPerf Controller private IP (for K8s agents)"
+  value       = var.cyperf_enabled ? aws_instance.cyperf_controller[0].private_ip : null
+}
+
+output "cyperf_controller_ui_url" {
+  description = "CyPerf Controller UI URL"
+  value       = var.cyperf_enabled ? "https://${aws_eip.cyperf_controller[0].public_ip}" : null
+}
+
+output "cyperf_controller_ssh" {
+  description = "SSH command for CyPerf Controller"
+  value       = var.cyperf_enabled ? "ssh -i ${var.private_key_path} admin@${aws_eip.cyperf_controller[0].public_ip}" : null
 }

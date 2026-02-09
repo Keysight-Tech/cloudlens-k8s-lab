@@ -97,6 +97,19 @@ variable "windows_instance_type" {
   default     = "t3.medium"
 }
 
+# CyPerf
+variable "cyperf_enabled" {
+  description = "Deploy CyPerf Controller (requires AWS Marketplace subscription)"
+  type        = bool
+  default     = false
+}
+
+variable "cyperf_controller_instance_type" {
+  description = "Instance type for CyPerf Controller (8 vCPU, 16GB RAM recommended)"
+  type        = string
+  default     = "c5.2xlarge"
+}
+
 # Tags
 variable "extra_tags" {
   description = "Additional tags to apply to all resources"
