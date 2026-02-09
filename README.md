@@ -49,16 +49,37 @@ Repeat for KVO and vPB. Go to **"Manage subscriptions"** to verify all products 
 
 ## 1.2 Create an EC2 Key Pair
 
-You need an SSH key pair to access your lab VMs.
+An EC2 key pair is required for SSH access to all Linux VMs in your lab (CLMS, vPB, Ubuntu workload, and tool VMs). Without it, you won't be able to connect to any of your lab instances.
 
-1. Open the **AWS Console** > **EC2** > **Key Pairs**
-2. Click **Create key pair**
-3. Name it (e.g., `cloudlens-lab`)
-4. Select **RSA** and **.pem** format
-5. Click **Create** - the `.pem` file downloads automatically
-6. Set permissions on the key:
+### Step 1: Navigate to Key Pairs
+
+In the AWS Console, go to **EC2** > **Network & Security** > **Key Pairs** in the left sidebar.
+
+![EC2 Key Pairs page - click Create key pair](docs/images/37-ec2-key-pairs-page.png)
+
+### Step 2: Create the Key Pair
+
+Click **Create key pair** (orange button, top right) and configure:
+
+| Setting | Value |
+|---------|-------|
+| **Name** | `cloudlens-lab` (or any name you'll remember) |
+| **Key pair type** | **RSA** |
+| **Private key file format** | **.pem** (for macOS/Linux) or **.ppk** (for PuTTY on Windows) |
+
+![Create key pair form - enter name, select RSA and .pem format](docs/images/38-ec2-create-key-pair.png)
+
+Click **Create key pair**. The `.pem` file will **download automatically to your browser's Downloads folder**.
+
+> **IMPORTANT:** This is the **only time** you can download this private key. AWS does not store it. If you lose it, you must create a new key pair. Save it somewhere safe.
+
+### Step 3: Set Key Permissions
 
 ```bash
+# Move it to a known location (optional)
+mv ~/Downloads/cloudlens-lab.pem ~/.ssh/
+
+# Restrict permissions (required for SSH to accept it)
 chmod 400 ~/Downloads/cloudlens-lab.pem
 ```
 
