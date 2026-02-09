@@ -14,7 +14,8 @@ This lab teaches you to deploy and operate **Keysight CloudLens** for Kubernetes
   - [1.2 Create an EC2 Key Pair](#12-create-an-ec2-key-pair)
   - [1.3 Check AWS Service Quotas](#13-check-aws-service-quotas)
   - [1.4 Configure AWS CLI](#14-configure-aws-cli)
-  - [1.5 Install Required Tools](#15-install-required-tools)
+  - [1.5 Install Terraform](#15-install-terraform)
+  - [1.6 Install Other Required Tools](#16-install-other-required-tools)
 - **Part 2: Deploy the Lab**
   - [2.1 Clone and Configure](#21-clone-and-configure)
   - [2.2 Deploy with Terraform](#22-deploy-with-terraform)
@@ -168,16 +169,34 @@ aws sts get-caller-identity --profile cloudlens-lab
 
 ---
 
-## 1.5 Install Required Tools
+## 1.5 Install Terraform
+
+Terraform provisions all the AWS infrastructure for this lab.
+
+```bash
+# macOS
+brew install terraform
+
+# Windows
+choco install terraform
+
+# Verify installation
+terraform version
+```
+
+> **Install docs:** [Terraform](https://developer.hashicorp.com/terraform/install). Requires version 1.0 or later.
+
+---
+
+## 1.6 Install Other Required Tools
 
 | Tool | Install (macOS) | Install (Windows) | Verify |
 |------|----------------|-------------------|--------|
-| **Terraform** | `brew install terraform` | `choco install terraform` | `terraform version` |
 | **kubectl** | `brew install kubectl` | `choco install kubernetes-cli` | `kubectl version --client` |
 | **Helm** | `brew install helm` | `choco install kubernetes-helm` | `helm version` |
 | **Docker** | `brew install --cask docker` | `choco install docker-desktop` | `docker --version` |
 
-> Install docs: [Terraform](https://developer.hashicorp.com/terraform/install) | [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) | [kubectl](https://kubernetes.io/docs/tasks/tools/) | [Helm](https://helm.sh/docs/intro/install/) | [Docker](https://docs.docker.com/desktop/)
+> Install docs: [kubectl](https://kubernetes.io/docs/tasks/tools/) | [Helm](https://helm.sh/docs/intro/install/) | [Docker](https://docs.docker.com/desktop/)
 
 ---
 
