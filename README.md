@@ -207,7 +207,7 @@ terraform version
 ```bash
 # Clone the repo
 git clone https://github.com/Keysight-Tech/cloudlens-k8s-lab.git
-cd cloudlens-k8s-lab
+cd cloudlens-k8s-lab/terraform
 
 # Create your configuration file
 cp terraform.tfvars.example terraform.tfvars
@@ -217,14 +217,12 @@ Edit `terraform.tfvars` with your values:
 
 ```hcl
 # Required - match your AWS setup from Part 1
-aws_profile      = "cloudlens-lab"
-aws_region       = "us-west-2"
-key_pair_name    = "cloudlens-lab"
-private_key_path = "~/Downloads/cloudlens-lab.pem"
+aws_profile   = "cloudlens-lab"
+aws_region    = "us-west-2"
+key_pair_name = "cloudlens-lab"
 
 # Personalize
 deployment_prefix = "cloudlens-lab"
-owner             = "Your Name"
 
 # Features
 vpb_enabled     = true
