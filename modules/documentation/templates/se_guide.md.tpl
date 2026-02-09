@@ -2,6 +2,8 @@
 
 ## Lab Owner: ${owner}
 
+**Lab Repo:** https://github.com/Keysight-Tech/cloudlens-k8s-lab
+
 ---
 
 # Part 1: Before You Begin
