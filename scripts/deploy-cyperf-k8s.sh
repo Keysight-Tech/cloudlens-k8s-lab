@@ -46,16 +46,21 @@ log_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
 log_warning() { echo -e "${YELLOW}[WARNING]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
-# Configuration
-CONTROLLER_PRIVATE_IP=${1:-""}
-CLUSTER_NAME=${2:-""}
-AWS_REGION=${3:-"us-west-2"}
-AWS_PROFILE=${4:-"cloudlens-lab"}
+# Configuration - env vars take priority (set by terraform provisioner), then args, then auto-detect
+CONTROLLER_PRIVATE_IP=${CYPERF_CONTROLLER_PRIVATE_IP:-${1:-""}}
+CLUSTER_NAME=${CYPERF_EKS_CLUSTER_NAME:-${2:-""}}
+AWS_REGION=${CYPERF_AWS_REGION:-${3:-"us-west-2"}}
+AWS_PROFILE=${CYPERF_AWS_PROFILE:-${4:-"cloudlens-lab"}}
+CONTROLLER_PUBLIC_IP_ENV=${CYPERF_CONTROLLER_PUBLIC_IP:-""}
+DEPLOYMENT_PREFIX_ENV=${CYPERF_DEPLOYMENT_PREFIX:-""}
 NAMESPACE="cyperf"
 AGENT_IMAGE="public.ecr.aws/keysight/cyperf-agent:release7.0"
 
-# Auto-detect deployment prefix from terraform
-DEPLOYMENT_PREFIX=$(terraform -chdir="$TF_DIR" output -raw deployment_prefix 2>/dev/null || echo "cloudlens-lab")
+# Auto-detect deployment prefix
+DEPLOYMENT_PREFIX="${DEPLOYMENT_PREFIX_ENV}"
+if [[ -z "$DEPLOYMENT_PREFIX" ]]; then
+    DEPLOYMENT_PREFIX=$(terraform -chdir="$TF_DIR" output -raw deployment_prefix 2>/dev/null || echo "cloudlens-lab")
+fi
 
 show_help() {
     echo "Usage: $0 [CONTROLLER_PRIVATE_IP] [CLUSTER_NAME] [AWS_REGION] [AWS_PROFILE]"
@@ -99,8 +104,11 @@ if [[ -z "$CONTROLLER_PRIVATE_IP" ]]; then
 fi
 log_success "Controller private IP: $CONTROLLER_PRIVATE_IP"
 
-# Also get public IP for UI access
-CONTROLLER_PUBLIC_IP=$(terraform -chdir="$TF_DIR" output -raw cyperf_controller_public_ip 2>/dev/null || echo "")
+# Also get public IP for UI access (env var from provisioner, or terraform output)
+CONTROLLER_PUBLIC_IP="${CONTROLLER_PUBLIC_IP_ENV}"
+if [[ -z "$CONTROLLER_PUBLIC_IP" ]]; then
+    CONTROLLER_PUBLIC_IP=$(terraform -chdir="$TF_DIR" output -raw cyperf_controller_public_ip 2>/dev/null || echo "")
+fi
 
 # Controller IP for API calls (prefer public)
 CONTROLLER_API_IP="$CONTROLLER_PUBLIC_IP"

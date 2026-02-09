@@ -147,3 +147,39 @@ resource "aws_eip" "cyperf_controller" {
     Project = var.deployment_prefix
   }
 }
+
+# ============================================================================
+# AUTO-DEPLOY K8S AGENTS (runs after controller + EKS are ready)
+# ============================================================================
+
+resource "null_resource" "deploy_cyperf_k8s" {
+  count = var.cyperf_enabled && var.eks_enabled ? 1 : 0
+
+  # Re-run if controller or EKS changes
+  triggers = {
+    controller_id  = aws_instance.cyperf_controller[0].id
+    controller_ip  = aws_instance.cyperf_controller[0].private_ip
+    controller_eip = aws_eip.cyperf_controller[0].public_ip
+    eks_cluster    = module.lab.eks_cluster_name
+  }
+
+  provisioner "local-exec" {
+    command     = "${path.module}/../scripts/deploy-cyperf-k8s.sh"
+    working_dir = path.module
+
+    environment = {
+      CYPERF_CONTROLLER_PRIVATE_IP = aws_instance.cyperf_controller[0].private_ip
+      CYPERF_CONTROLLER_PUBLIC_IP  = aws_eip.cyperf_controller[0].public_ip
+      CYPERF_EKS_CLUSTER_NAME      = module.lab.eks_cluster_name
+      CYPERF_AWS_REGION             = var.aws_region
+      CYPERF_AWS_PROFILE            = var.aws_profile
+      CYPERF_DEPLOYMENT_PREFIX      = var.deployment_prefix
+    }
+  }
+
+  depends_on = [
+    aws_instance.cyperf_controller,
+    aws_eip.cyperf_controller,
+    module.lab
+  ]
+}
