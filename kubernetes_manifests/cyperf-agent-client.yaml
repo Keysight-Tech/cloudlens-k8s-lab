@@ -1,0 +1,50 @@
+# ============================================================================
+# CyPerf Agent Client - K8s Pod Deployment
+# ============================================================================
+# Deploys CyPerf client agent as a pod in cyperf-shared namespace.
+# Uses pod networking (no raw sockets) - avoids ENA/PACKET_MMAP issues.
+#
+# The client connects to the CyPerf Controller via management network,
+# then sends test traffic through nginx pods where CloudLens captures it.
+#
+# Image: public.ecr.aws/keysight/cyperf-agent:release7.0
+# Ref: https://github.com/Keysight/cyperf/tree/main/deployment/k8s
+# ============================================================================
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cyperf-agent-client
+  namespace: cyperf-shared
+  labels:
+    app: cyperf-agent
+    role: client
+spec:
+  containers:
+  - name: cyperf-agent
+    image: public.ecr.aws/keysight/cyperf-agent:release7.0
+    env:
+    - name: AGENT_CONTROLLER
+      value: "${CONTROLLER_PRIVATE_IP}"
+    - name: AGENT_TAGS
+      value: "role=client"
+    securityContext:
+      privileged: false
+      capabilities:
+        add:
+        - NET_ADMIN
+        - IPC_LOCK
+        - NET_RAW
+    resources:
+      requests:
+        cpu: 500m
+        memory: 512Mi
+      limits:
+        cpu: "2"
+        memory: 2Gi
+  restartPolicy: Always
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - key: "se-id"
+    operator: "Exists"
+    effect: "NoSchedule"

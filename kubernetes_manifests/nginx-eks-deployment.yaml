@@ -1,0 +1,447 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-html-config
+  namespace: default
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Keysight EKS CloudLens Tap</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                overflow: hidden;
+                position: relative;
+            }
+
+            .particle {
+                position: absolute;
+                width: 4px;
+                height: 4px;
+                background: rgba(255, 255, 255, 0.7);
+                border-radius: 50%;
+                animation: float 6s ease-in-out infinite;
+            }
+
+            @keyframes float {
+                0%, 100% { transform: translateY(0px) rotate(0deg); }
+                50% { transform: translateY(-20px) rotate(180deg); }
+            }
+
+            .container {
+                text-align: center;
+                z-index: 10;
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+                border-radius: 20px;
+                padding: 60px 40px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                animation: fadeInUp 1s ease-out;
+            }
+
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(30px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            h1 {
+                font-size: 3.5rem;
+                font-weight: 700;
+                color: #ffffff;
+                margin-bottom: 20px;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+                animation: glow 2s ease-in-out infinite alternate;
+            }
+
+            @keyframes glow {
+                from { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(255, 255, 255, 0.5); }
+                to { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.8); }
+            }
+
+            .subtitle {
+                font-size: 1.2rem;
+                color: #e0e6ff;
+                margin-bottom: 30px;
+                opacity: 0.9;
+            }
+
+            .status-indicator {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                background: rgba(76, 175, 80, 0.2);
+                padding: 10px 20px;
+                border-radius: 25px;
+                border: 1px solid rgba(76, 175, 80, 0.4);
+                margin-top: 20px;
+            }
+
+            .status-dot {
+                width: 12px;
+                height: 12px;
+                background: #4CAF50;
+                border-radius: 50%;
+                animation: pulse 1.5s infinite;
+            }
+
+            @keyframes pulse {
+                0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+                70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+            }
+
+            .status-text {
+                color: #ffffff;
+                font-weight: 500;
+            }
+
+            .protocol-info {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                background: rgba(255, 255, 255, 0.1);
+                padding: 10px 15px;
+                border-radius: 10px;
+                color: #ffffff;
+                font-size: 0.9rem;
+                backdrop-filter: blur(5px);
+            }
+
+            .keysight-logo {
+                font-size: 1.8rem;
+                color: #ff6b35;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+
+            .platform-badge {
+                display: inline-block;
+                background: rgba(255, 107, 53, 0.2);
+                padding: 8px 16px;
+                border-radius: 15px;
+                color: #ff6b35;
+                font-weight: 600;
+                margin-top: 15px;
+                border: 1px solid rgba(255, 107, 53, 0.4);
+            }
+
+            @media (max-width: 768px) {
+                h1 { font-size: 2.5rem; }
+                .container { padding: 40px 20px; margin: 20px; }
+                .protocol-info { position: static; margin-top: 20px; }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="particle" style="top: 10%; left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="top: 20%; left: 80%; animation-delay: 1s;"></div>
+        <div class="particle" style="top: 60%; left: 20%; animation-delay: 2s;"></div>
+        <div class="particle" style="top: 80%; left: 90%; animation-delay: 3s;"></div>
+        <div class="particle" style="top: 40%; left: 70%; animation-delay: 4s;"></div>
+        <div class="particle" style="top: 70%; left: 50%; animation-delay: 5s;"></div>
+
+        <div class="protocol-info" id="protocolInfo">
+            <span id="protocolText">HTTP/HTTPS</span>
+        </div>
+
+        <div class="container">
+            <div class="keysight-logo">⚡ KEYSIGHT</div>
+            <h1>Welcome to Keysight EKS CloudLens Tap</h1>
+            <p class="subtitle">Advanced Kubernetes Container Monitoring & Analytics</p>
+            <div class="platform-badge">AWS EKS Platform</div>
+
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span class="status-text">Service Active</span>
+            </div>
+        </div>
+
+        <script>
+            function updateProtocolInfo() {
+                const protocol = window.location.protocol;
+                const protocolText = document.getElementById('protocolText');
+
+                if (protocol === 'https:') {
+                    protocolText.textContent = 'HTTPS (Secure)';
+                    protocolText.style.color = '#4CAF50';
+                } else {
+                    protocolText.textContent = 'HTTP (Standard)';
+                    protocolText.style.color = '#FFA726';
+                }
+            }
+
+            updateProtocolInfo();
+
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 6000);
+            }
+
+            setInterval(createParticle, 2000);
+        </script>
+    </body>
+    </html>
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: default
+data:
+  default.conf: |
+    # CyPerf reverse proxy upstream - resolves to cyperf-backend Service
+    # When cyperf-backend service exists, /cyperf/ requests proxy to it
+    # The deploy-cyperf-vm.sh script creates the cyperf-backend service per namespace
+    upstream cyperf_backend {
+        server cyperf-backend:80;
+    }
+
+    server {
+        listen 80;
+        server_name _;
+
+        # Default: serve static page
+        location / {
+            root /usr/share/nginx/html;
+            index index.html;
+
+            add_header X-Protocol "HTTP" always;
+            add_header X-Served-By "Keysight-EKS-CloudLens" always;
+        }
+
+        # CyPerf reverse proxy path - proxies to CyPerf Server VM
+        location /cyperf/ {
+            proxy_pass http://cyperf_backend/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_connect_timeout 5s;
+            proxy_read_timeout 60s;
+        }
+
+        location /health {
+            access_log off;
+            return 200 "OK\n";
+            add_header Content-Type text/plain;
+        }
+    }
+
+    server {
+        listen 443 ssl;
+        server_name _;
+
+        ssl_certificate /etc/nginx/ssl/tls.crt;
+        ssl_certificate_key /etc/nginx/ssl/tls.key;
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384;
+        ssl_prefer_server_ciphers off;
+
+        location / {
+            root /usr/share/nginx/html;
+            index index.html;
+
+            add_header X-Protocol "HTTPS" always;
+            add_header X-Served-By "Keysight-EKS-CloudLens" always;
+            add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+        }
+
+        # CyPerf reverse proxy path (HTTPS)
+        location /cyperf/ {
+            proxy_pass http://cyperf_backend/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_connect_timeout 5s;
+            proxy_read_timeout 60s;
+        }
+
+        location /health {
+            access_log off;
+            return 200 "OK\n";
+            add_header Content-Type text/plain;
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-cloudlens
+  namespace: default
+  labels:
+    app: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+        cloudlens: enabled
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+        volumeMounts:
+        - name: html-volume
+          mountPath: /usr/share/nginx/html
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
+        - name: tls-secret
+          mountPath: /etc/nginx/ssl
+          readOnly: true
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+      - name: cloudlens-sensor
+        image: 466778915280.dkr.ecr.us-west-2.amazonaws.com/se-demo-cloudlens-sensor:6.10.0-98
+        imagePullPolicy: Always
+        args:
+        - "--server"
+        - "10.0.1.106"
+        - "--project_key"
+        - "REPLACE_WITH_CLMS_PROJECT_KEY"
+        - "--auto_update"
+        - "y"
+        - "--accept_eula"
+        - "yes"
+        - "--custom_tags"
+        - "platform=eks,app=nginx,deployment=se-demo,protocol=http-https"
+        - "--ssl_verify"
+        - "no"
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        securityContext:
+          capabilities:
+            add:
+            - SYS_MODULE
+            - SYS_RESOURCE
+            - NET_RAW
+            - NET_ADMIN
+          allowPrivilegeEscalation: true
+          privileged: false
+        volumeMounts:
+        - name: host-root
+          mountPath: /host
+          readOnly: true
+        - name: lib-modules
+          mountPath: /lib/modules
+          readOnly: true
+        - name: cloudlens-logs
+          mountPath: /var/log/cloudlens
+        - name: containerd-socket
+          mountPath: /var/run/containerd/containerd.sock
+          readOnly: true
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "100m"
+            memory: "128Mi"
+
+      volumes:
+      - name: html-volume
+        configMap:
+          name: nginx-html-config
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+      - name: tls-secret
+        secret:
+          secretName: nginx-tls-secret
+      - name: host-root
+        hostPath:
+          path: /
+          type: Directory
+      - name: lib-modules
+        hostPath:
+          path: /lib/modules
+          type: Directory
+      - name: cloudlens-logs
+        emptyDir: {}
+      - name: containerd-socket
+        hostPath:
+          path: /var/run/containerd/containerd.sock
+          type: Socket
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: default
+  labels:
+    app: nginx
+spec:
+  type: LoadBalancer
+  selector:
+    app: nginx
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 443

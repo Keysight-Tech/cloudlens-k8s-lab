@@ -1,0 +1,47 @@
+# ============================================================================
+# CyPerf Backend Service + Endpoints
+# ============================================================================
+# Creates a K8s Service that routes to the external CyPerf Server VM's test ENI.
+# nginx uses this as its upstream for reverse proxy mode.
+#
+# Template variables (replaced by deploy-cyperf-vm.sh):
+#   ${NAMESPACE}            - SE namespace (e.g., se-01)
+#   ${CYPERF_SERVER_TEST_IP} - CyPerf Server test ENI private IP
+#
+# Deploy with:
+#   sed -e "s/\${NAMESPACE}/se-01/g" \
+#       -e "s/\${CYPERF_SERVER_TEST_IP}/10.100.43.x/g" \
+#       cyperf-nginx-proxy.yaml | kubectl apply -n se-01 -f -
+# ============================================================================
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cyperf-backend
+  namespace: ${NAMESPACE}
+  labels:
+    app: cyperf-backend
+    purpose: cyperf-reverse-proxy
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    protocol: TCP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: cyperf-backend
+  namespace: ${NAMESPACE}
+  labels:
+    app: cyperf-backend
+    purpose: cyperf-reverse-proxy
+subsets:
+- addresses:
+  - ip: ${CYPERF_SERVER_TEST_IP}
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP

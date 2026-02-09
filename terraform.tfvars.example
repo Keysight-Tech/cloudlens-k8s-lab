@@ -1,0 +1,35 @@
+# ============================================================================
+# CloudLens K8s SE Training Lab - Configuration
+# ============================================================================
+# Copy this file to terraform.tfvars and update values for your environment:
+#   cp terraform.tfvars.example terraform.tfvars
+# ============================================================================
+
+# Required - AWS Configuration
+aws_profile   = "your-aws-profile"
+aws_region    = "us-west-2"
+key_pair_name = "your-key-pair"
+
+# Number of SE labs to deploy (1-25)
+num_se_labs   = 1
+multi_se_mode = true
+
+# Optional feature toggles
+vpb_enabled              = true
+cyperf_enabled           = false
+cyperf_vm_agents_enabled = false
+rhel_enabled             = false
+ubuntu_workload_enabled  = true
+shared_eks_enabled       = true
+use_elastic_ips          = true
+
+# Optional instance sizing (uncomment to override defaults)
+# clms_instance_type    = "t3.xlarge"
+# kvo_instance_type     = "t3.2xlarge"
+# vpb_instance_type     = "t3.xlarge"
+# ubuntu_instance_type  = "t3.medium"
+# windows_instance_type = "t3.medium"
+
+# Optional security (restrict access to your IP)
+# allowed_ssh_cidr   = "203.0.113.0/32"
+# allowed_https_cidr = "203.0.113.0/32"

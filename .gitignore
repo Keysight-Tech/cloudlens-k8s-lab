@@ -1,0 +1,33 @@
+# Terraform
+*.tfstate*
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+*.auto.tfvars
+tfplan*
+
+# Generated content
+generated/
+se-kubeconfigs/
+
+# Secrets
+*.pem
+*.key
+*.crt
+*.p12
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor/IDE
+.claude/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Misc
+*.backup
+*.zip
+*.log

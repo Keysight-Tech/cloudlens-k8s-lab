@@ -1,0 +1,146 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-cloudlens
+  labels:
+    app: nginx
+    tier: web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+        cloudlens: enabled
+        tier: web
+    spec:
+      containers:
+      # Main nginx application container
+      - name: nginx
+        # IMPORTANT: Update image URL after ECR repository is created
+        # Format: <ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/<REPO_NAME>:tag
+        image: REPLACE_WITH_ECR_URL/se-demo-nginx-app:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+
+      # CloudLens sensor sidecar container
+      - name: cloudlens-sensor
+        # IMPORTANT: Update image URL after ECR repository is created
+        image: REPLACE_WITH_ECR_URL/se-demo-cloudlens-sensor:6.10.0-98
+        imagePullPolicy: Always
+        args:
+        - "--server"
+        - "10.0.1.106"  # CLMS private IP - update from terraform output
+        - "--project_key"
+        - "REPLACE_WITH_CLMS_PROJECT_KEY"  # Generate from CLMS UI
+        - "--auto_update"
+        - "y"
+        - "--accept_eula"
+        - "yes"
+        - "--custom_tags"
+        - "platform=eks,app=nginx,deployment=se-demo"
+        - "--ssl_verify"
+        - "no"
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        securityContext:
+          capabilities:
+            add:
+            - SYS_MODULE
+            - SYS_RESOURCE
+            - NET_RAW
+            - NET_ADMIN
+          allowPrivilegeEscalation: true
+          privileged: false
+        volumeMounts:
+        - name: host-root
+          mountPath: /host
+          readOnly: true
+        - name: lib-modules
+          mountPath: /lib/modules
+          readOnly: true
+        - name: cloudlens-logs
+          mountPath: /var/log/cloudlens
+        - name: containerd-socket
+          mountPath: /var/run/containerd/containerd.sock
+          readOnly: true
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "100m"
+            memory: "128Mi"
+
+      volumes:
+      - name: host-root
+        hostPath:
+          path: /
+          type: Directory
+      - name: lib-modules
+        hostPath:
+          path: /lib/modules
+          type: Directory
+      - name: cloudlens-logs
+        emptyDir: {}
+      - name: containerd-socket
+        hostPath:
+          path: /var/run/containerd/containerd.sock
+          type: Socket
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  labels:
+    app: nginx
+spec:
+  type: LoadBalancer
+  selector:
+    app: nginx
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
