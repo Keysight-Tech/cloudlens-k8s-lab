@@ -23,27 +23,27 @@ Before deploying, ensure your AWS account has:
 
 Open the AWS Console and search for **"AWS Marketplace"** in the search bar.
 
-![AWS Marketplace search](images/01-aws-marketplace-search.png)
+![AWS Marketplace search](docs/images/01-aws-marketplace-search.png)
 
 ### Step 2: Search for Keysight CloudLens
 
 In the Marketplace, click **"Discover products"** and search for **"Keysight CloudLens"**.
 
-![Search for Keysight CloudLens](images/03-marketplace-cloudlens-search.png)
+![Search for Keysight CloudLens](docs/images/03-marketplace-cloudlens-search.png)
 
 ### Step 3: Subscribe to CloudLens Manager
 
 Click on **Keysight CloudLens Manager**, then click **"View purchase options"** > **"Continue to Subscribe"** > **"Accept Terms"**.
 
-![CloudLens Manager product page](images/04-clms-product-detail.png)
+![CloudLens Manager product page](docs/images/04-clms-product-detail.png)
 
-![Subscription accepted - $0.00 contract](images/05-clms-subscription-accepted.png)
+![Subscription accepted - $0.00 contract](docs/images/05-clms-subscription-accepted.png)
 
 ### Step 4: Verify All Subscriptions
 
 Repeat for KVO and vPB. Go to **"Manage subscriptions"** to verify all products show **Active** status.
 
-![All 6 Keysight subscriptions active](images/06-manage-subscriptions.png)
+![All 6 Keysight subscriptions active](docs/images/06-manage-subscriptions.png)
 
 ---
 
@@ -93,7 +93,7 @@ aws configure --profile cloudlens-lab
 aws sts get-caller-identity --profile cloudlens-lab
 ```
 
-![AWS CLI configuration](images/10-aws-cli-configure.png)
+![AWS CLI configuration](docs/images/10-aws-cli-configure.png)
 
 ---
 
@@ -213,7 +213,7 @@ kubectl get nodes
 kubectl get pods -A
 ```
 
-![kubectl get nodes showing 3 nodes Ready](images/11-kubectl-get-nodes.png)
+![kubectl get nodes showing 3 nodes Ready](docs/images/11-kubectl-get-nodes.png)
 
 ---
 
@@ -254,7 +254,7 @@ curl http://$NGINX_URL
 2. Accept the self-signed certificate warning
 3. You'll see the CLMS landing page:
 
-![CLMS landing page](images/12-clms-landing-page.png)
+![CLMS landing page](docs/images/12-clms-landing-page.png)
 
 4. Log in with default credentials:
 
@@ -263,7 +263,7 @@ curl http://$NGINX_URL
 | **Username** | `admin` |
 | **Password** | `Cl0udLens@dm!n` |
 
-![CLMS login page with credentials](images/13-clms-login-page.png)
+![CLMS login page with credentials](docs/images/13-clms-login-page.png)
 
 5. **Change the default password immediately** when prompted
 
@@ -278,11 +278,11 @@ This allows KVO to communicate with CLMS.
 3. Create a username and password (e.g., `b@kvo.com` / `YourPassword123`)
 4. Save these credentials - you'll use them in the next step
 
-![CLMS Create KVO User dialog](images/14-clms-create-kvo-user.png)
+![CLMS Create KVO User dialog](docs/images/14-clms-create-kvo-user.png)
 
 After creating the user, you'll see it in the User Management page:
 
-![CLMS User Management showing admin + KVO user](images/15-clms-user-management.png)
+![CLMS User Management showing admin + KVO user](docs/images/15-clms-user-management.png)
 
 ---
 
@@ -297,7 +297,7 @@ After creating the user, you'll see it in the User Management page:
 | **Username** | `admin` |
 | **Password** | `admin` |
 
-![KVO login page](images/16-kvo-login-page.png)
+![KVO login page](docs/images/16-kvo-login-page.png)
 
 4. **Change the default password** when prompted
 
@@ -315,11 +315,11 @@ After creating the user, you'll see it in the User Management page:
    - **Password:** the KVO password created in step 3.2
 5. Click **Ok**
 
-![KVO Discover CloudLens Manager dialog](images/18-kvo-discover-clms-dialog.png)
+![KVO Discover CloudLens Manager dialog](docs/images/18-kvo-discover-clms-dialog.png)
 
 After successful registration, you'll see the CLMS with **CONNECTED** status:
 
-![KVO Inventory showing CLMS connected](images/17-kvo-inventory-clms-connected.png)
+![KVO Inventory showing CLMS connected](docs/images/17-kvo-inventory-clms-connected.png)
 
 ---
 
@@ -335,7 +335,7 @@ License keys are required for KVO, CLMS, and vPB. Contact your Keysight represen
 4. Click **Load data** to parse the codes
 5. Review the products and quantities, then click **Activate**
 
-![KVO Activate Licenses - step-by-step](images/22-kvo-activate-licenses-steps.png)
+![KVO Activate Licenses - step-by-step](docs/images/22-kvo-activate-licenses-steps.png)
 
 After loading, you'll see the products parsed with their descriptions:
 
@@ -345,7 +345,7 @@ After loading, you'll see the products parsed with their descriptions:
 | **CloudLens** | CloudLens Enterprise Edition - 1 year subscription |
 | **CloudLens** | CloudLens Private Virtual Packet Processing - Advanced |
 
-![KVO Activate Licenses with products loaded](images/21-kvo-activate-licenses-loaded.png)
+![KVO Activate Licenses with products loaded](docs/images/21-kvo-activate-licenses-loaded.png)
 
 ---
 
@@ -446,7 +446,7 @@ kubectl logs -n cloudlens-demo -l app.kubernetes.io/name=cloudlens-sensor --tail
 
 Expected output: pods show `Running` status, DaemonSet shows `DESIRED = CURRENT = READY`.
 
-![kubectl get pods showing cloudlens sensor and nginx pods running](images/34-kubectl-pods-sensor.png)
+![kubectl get pods showing cloudlens sensor and nginx pods running](docs/images/34-kubectl-pods-sensor.png)
 
 ### Step 6: Verify in CLMS
 
@@ -465,7 +465,7 @@ Now configure KVO to tap traffic from Kubernetes pods and forward it to your too
 1. In KVO, go to **Visibility Fabric > Cloud Configs**
 2. Click **New Cloud Config** and select **Kubernetes Cluster**
 
-![KVO Cloud Configs page with New Cloud Config dropdown](images/23-kvo-cloud-configs-page.png)
+![KVO Cloud Configs page with New Cloud Config dropdown](docs/images/23-kvo-cloud-configs-page.png)
 
 3. Configure:
    - **Name:** `K8s` (or any name you prefer)
@@ -474,17 +474,17 @@ Now configure KVO to tap traffic from Kubernetes pods and forward it to your too
    - **Cloud to Device Link:** configure if needed
 4. Click **Ok**
 
-![KVO New Cloud Config dialog](images/24-kvo-new-cloud-config.png)
+![KVO New Cloud Config dialog](docs/images/24-kvo-new-cloud-config.png)
 
 5. **Commit** the change request by clicking the **Commit** button at the top
 
-![KVO Cloud Config with uncommitted changes - click Commit](images/25-kvo-cloud-config-commit.png)
+![KVO Cloud Config with uncommitted changes - click Commit](docs/images/25-kvo-cloud-config-commit.png)
 
 ### Step 2: Create a Cloud Collection
 
 1. In KVO, go to **Visibility Fabric > Cloud Collection**
 
-![KVO Cloud Collection page](images/26-kvo-cloud-collection-list.png)
+![KVO Cloud Collection page](docs/images/26-kvo-cloud-collection-list.png)
 
 2. Click **New Cloud Collection**
 3. Select your Kubernetes Cloud Config (`S1000_EKS`)
@@ -492,7 +492,7 @@ Now configure KVO to tap traffic from Kubernetes pods and forward it to your too
    - Select by **app label:** `nginx-demo`
    - Or select by **Namespace**
 
-![KVO New Cloud Collection with workload selector](images/27-kvo-new-cloud-collection.png)
+![KVO New Cloud Collection with workload selector](docs/images/27-kvo-new-cloud-collection.png)
 
 5. Click **Ok** and **Commit**
 
@@ -502,12 +502,12 @@ Before creating a monitoring policy, you need to define your tool destinations.
 
 1. In KVO, go to **Visibility Fabric > Tools**
 
-![KVO Tools page with Ubuntu and Windows tools](images/28-kvo-tools-page.png)
+![KVO Tools page with Ubuntu and Windows tools](docs/images/28-kvo-tools-page.png)
 
 2. Click **New Tool > REMOTE**
 3. On the **General** tab, set the tool name (e.g., `Ubuntu_Tool`)
 
-![KVO New Remote Tool - General tab](images/29-kvo-new-remote-tool.png)
+![KVO New Remote Tool - General tab](docs/images/29-kvo-new-remote-tool.png)
 
 4. On the **Remote Configuration** tab:
    - **Traffic Source:** select **"Traffic source is a cloud"**
@@ -516,7 +516,7 @@ Before creating a monitoring policy, you need to define your tool destinations.
    - **VnID:** any value (e.g., `234`)
    - **UDP Destination Port:** `4789`
 
-![KVO Remote Tool - VXLAN configuration](images/30-kvo-remote-tool-vxlan.png)
+![KVO Remote Tool - VXLAN configuration](docs/images/30-kvo-remote-tool-vxlan.png)
 
 5. Click **Ok** and repeat for other tool VMs
 
@@ -529,17 +529,17 @@ Before creating a monitoring policy, you need to define your tool destinations.
    - **Traffic Destination:** the Remote Tool created above
    - **Run Mode:** Continuously
 
-![KVO Monitoring Policy detail](images/32-kvo-monitoring-policy-detail.png)
+![KVO Monitoring Policy detail](docs/images/32-kvo-monitoring-policy-detail.png)
 
 4. **Save and Commit** - Click the **Commit** button at the top to apply your changes
 
 After committing, you'll see your complete traffic flow in the **DIAGRAM** view:
 
-![KVO Monitoring Policies diagram - sources to policies to destinations](images/31-kvo-monitoring-policies-diagram.png)
+![KVO Monitoring Policies diagram - sources to policies to destinations](docs/images/31-kvo-monitoring-policies-diagram.png)
 
 The diagram shows the end-to-end visibility pipeline: **Traffic Sources** (Cloud Collections) on the left, **Monitoring Policies** in the center, and **Traffic Destinations** (Remote Tools) on the right. Each policy connects a source to a destination, running **Active | Continuously**.
 
-![KVO Monitoring Policies complete - all policies committed](images/33-kvo-monitoring-policies-complete.png)
+![KVO Monitoring Policies complete - all policies committed](docs/images/33-kvo-monitoring-policies-complete.png)
 
 > **Important:** KVO sends mirrored traffic via VXLAN to your tool VM's **private IP** over the internal VPC network.
 
@@ -565,7 +565,7 @@ sudo tcpdump -i ens5 udp port 4789 -nn -w ~/captures/cloudlens-traffic.pcap -c 1
 
 Expected output: You should see UDP packets on port 4789 containing the mirrored traffic from your Kubernetes pods.
 
-![tcpdump showing VXLAN traffic with netflix, youtube, openai hosts](images/36-tcpdump-vxlan-traffic.png)
+![tcpdump showing VXLAN traffic with netflix, youtube, openai hosts](docs/images/36-tcpdump-vxlan-traffic.png)
 
 ### Option B: Windows Tool VM (Wireshark)
 
@@ -587,7 +587,7 @@ vxlan && http
 http.host contains "nginx"
 ```
 
-![Wireshark capturing VXLAN-encapsulated HTTP traffic](images/35-wireshark-vxlan-capture.png)
+![Wireshark capturing VXLAN-encapsulated HTTP traffic](docs/images/35-wireshark-vxlan-capture.png)
 
 > **Tip:** Expand the **Virtual eXtensible Local Area Network** layer in packet details to see the VXLAN VNI, then expand inner layers to see the original traffic.
 
@@ -855,39 +855,14 @@ Check for insufficient resources or scheduling constraints.
 
 ## Architecture Diagram
 
-```
-                    +---------------------------------------------+
-                    |         Your Lab VPC (10.1.0.0/16)          |
-                    |                                             |
-                    |  +----------+ +----------+ +----------+    |
-                    |  |  CLMS    | |   KVO    | |   vPB    |    |
-                    |  | CloudLens| | Vision   | | Packet   |    |
-                    |  | Manager  | | One      | | Broker   |    |
-                    |  +----------+ +----------+ +----------+    |
-                    |                                             |
-                    |  +----------+ +----------+ +----------+    |
-                    |  | Ubuntu   | | Windows  | | Tool VMs |    |
-                    |  | Workload | | Workload | | (Linux + |    |
-                    |  | (tapped) | | (tapped) | |  Windows)|    |
-                    |  +----------+ +----------+ +----------+    |
-                    |                                             |
-                    |  +---------------------------------------+  |
-                    |  |   EKS Cluster                         |  |
-                    |  |   +--------+  +--------+  +--------+  |  |
-                    |  |   | nginx  |  | nginx  |  |CloudLens| |  |
-                    |  |   | pod    |  | pod    |  | sensor  | |  |
-                    |  |   +--------+  +--------+  +--------+  |  |
-                    |  +---------------------------------------+  |
-                    +---------------------------------------------+
+![CloudLens Kubernetes Visibility Architecture](docs/images/architecture-diagram.png)
 
-Traffic Flow:
-  1. Pods generate traffic (nginx serves HTTP)
-  2. CloudLens sensor (DaemonSet) mirrors pod traffic
-  3. CLMS receives sensor telemetry
-  4. KVO orchestrates: Cloud Collection -> Monitoring Policy -> Tool VM
-  5. Tool VM receives mirrored traffic via VXLAN (UDP 4789)
-  6. Analyze with tcpdump (Linux) or Wireshark (Windows)
-```
+**Traffic Flow:**
+1. **Deploy** - KVO pushes monitoring policies to CloudLens Manager
+2. **Tap & Mirror** - CloudLens sensors (DaemonSet or Sidecar) capture pod traffic (North-South + East-West)
+3. **Encap** - Mirrored traffic is VXLAN-encapsulated and sent to the analysis plane
+4. **Filter** - Virtual Packet Broker performs traffic de-duplication, header stripping, and filtering
+5. **Deliver** - Filtered traffic is forwarded via VXLAN/GRE to enterprise tools (Wireshark, tcpdump, threat detection)
 
 ---
 
