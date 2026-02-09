@@ -78,7 +78,7 @@ resource "aws_security_group" "cyperf_controller" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = [var.allowed_ssh_cidr, "10.1.0.0/16"]
+    cidr_blocks = [var.allowed_ssh_cidr, module.lab.vpc_cidr]
   }
 
   # HTTP from VPC (K8s agent traffic)
@@ -87,7 +87,7 @@ resource "aws_security_group" "cyperf_controller" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["10.1.0.0/16"]
+    cidr_blocks = [module.lab.vpc_cidr]
   }
 
   # Allow all outbound
