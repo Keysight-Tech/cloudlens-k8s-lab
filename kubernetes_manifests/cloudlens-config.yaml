@@ -4,18 +4,18 @@ metadata:
   name: cloudlens-config
   namespace: default
 data:
-  # CLMS private IP (update after terraform apply)
-  clms_ip: "10.0.1.106"
+  # CLMS private IP - run: terraform output clms_private_ip
+  clms_ip: "REPLACE_WITH_CLMS_PRIVATE_IP"
 
-  # vPB ingress private IP (update after terraform apply)
-  vpb_ingress_ip: "10.0.2.67"
+  # vPB ingress private IP - run: terraform output vpb_interfaces
+  vpb_ingress_ip: "REPLACE_WITH_VPB_INGRESS_IP"
 
   # CloudLens project key (generate from CLMS UI after deployment)
   # Access CLMS UI → Projects → Create Project → Copy project key
   project_key: ""
 
-  # Deployment prefix for tagging
-  deployment_prefix: "se-demo"
+  # Deployment prefix - must match your terraform.tfvars deployment_prefix
+  deployment_prefix: "REPLACE_WITH_DEPLOYMENT_PREFIX"
 
   # Custom tags for CloudLens sensors
   custom_tags: "platform=eks,training_lab=true"

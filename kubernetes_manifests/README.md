@@ -59,8 +59,12 @@ image: 466778915280.dkr.ecr.us-west-2.amazonaws.com/se-demo-nginx-app:latest
 5. Update manifests:
    ```bash
    # Replace REPLACE_WITH_CLMS_PROJECT_KEY with your actual key
+   # macOS:
    sed -i '' 's/REPLACE_WITH_CLMS_PROJECT_KEY/<YOUR_PROJECT_KEY>/g' nginx-deployment.yaml
    sed -i '' 's/REPLACE_WITH_CLMS_PROJECT_KEY/<YOUR_PROJECT_KEY>/g' apache-deployment.yaml
+   # Linux:
+   sed -i 's/REPLACE_WITH_CLMS_PROJECT_KEY/<YOUR_PROJECT_KEY>/g' nginx-deployment.yaml
+   sed -i 's/REPLACE_WITH_CLMS_PROJECT_KEY/<YOUR_PROJECT_KEY>/g' apache-deployment.yaml
    ```
 
 ### Step 3: Verify CLMS IP
@@ -69,7 +73,7 @@ Check the CLMS private IP matches the manifests:
 
 ```bash
 terraform output clms_private_ip
-# Should be: 10.0.1.106
+# Returns the private IP assigned to your CLMS instance (e.g. 10.1.1.x)
 ```
 
 If different, update the `--server` argument in both deployment files.

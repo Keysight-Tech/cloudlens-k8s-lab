@@ -51,8 +51,8 @@ CONTROLLER_IP=${1:-""}
 AWS_PROFILE=${2:-"${AWS_PROFILE:-cloudlens-lab}"}
 AWS_REGION=${3:-"${AWS_REGION:-us-west-2}"}
 DUT_HOST_IP=${4:-""}  # Proxy pod IP passed from deploy-cyperf-k8s.sh
-CYPERF_USER="admin"
-CYPERF_PASS='CyPerf&Keysight#1'
+CYPERF_USER="${CYPERF_USER:-admin}"
+CYPERF_PASS="${CYPERF_PASS:-CyPerf&Keysight#1}"
 SESSION_NAME="CloudLens Lab - CyPerf DUT Mode"
 PROFILE_NAME="CloudLens Lab DUT Traffic"
 

@@ -317,7 +317,7 @@ spec:
         imagePullPolicy: Always
         args:
         - "--server"
-        - "10.0.1.106"
+        - "REPLACE_WITH_CLMS_PRIVATE_IP"
         - "--project_key"
         - "REPLACE_WITH_CLMS_PROJECT_KEY"
         - "--auto_update"
@@ -325,7 +325,7 @@ spec:
         - "--accept_eula"
         - "yes"
         - "--custom_tags"
-        - "platform=eks,app=nginx,deployment=se-demo,protocol=http-https"
+        - "platform=eks,app=nginx,deployment=REPLACE_WITH_DEPLOYMENT_PREFIX,protocol=http-https"
         - "--ssl_verify"
         - "no"
         env:
