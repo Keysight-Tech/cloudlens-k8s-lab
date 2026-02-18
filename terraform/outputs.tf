@@ -109,3 +109,14 @@ output "cyperf_controller_ssh" {
   description = "SSH command for CyPerf Controller"
   value       = var.cyperf_enabled ? "ssh -i ${var.private_key_path} admin@${aws_eip.cyperf_controller[0].public_ip}" : null
 }
+
+# Generated Documentation
+output "lab_guide_path" {
+  description = "Path to generated lab guide"
+  value       = "${path.module}/generated/${var.deployment_prefix}/${upper(var.deployment_prefix)}-GUIDE.md"
+}
+
+output "credentials_path" {
+  description = "Path to generated credentials file"
+  value       = "${path.module}/generated/${var.deployment_prefix}/credentials.txt"
+}

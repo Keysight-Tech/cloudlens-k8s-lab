@@ -154,6 +154,81 @@ kubectl wait --for=delete pod -l app=cyperf-agent -n "$NAMESPACE" --timeout=60s 
 kubectl wait --for=delete pod -l app=cyperf-proxy -n "$NAMESPACE" --timeout=60s 2>/dev/null || true
 
 # ============================================================================
+# STEP 3.5: Wait for CyPerf Controller to be ready
+# ============================================================================
+# Fresh controller deploys take ~10-15 minutes for Keycloak auth to initialize.
+# We must wait for the controller to be fully ready before cleaning agents.
+
+echo ""
+echo "------------------------------------------------------------"
+log_info "Waiting for CyPerf Controller to be ready (fresh deploys take ~10 min)..."
+echo "------------------------------------------------------------"
+echo ""
+
+MAX_RETRIES=30
+RETRY_INTERVAL=20
+CONTROLLER_READY=false
+
+for attempt in $(seq 1 $MAX_RETRIES); do
+    if curl -sk --connect-timeout 10 "https://${CONTROLLER_API_IP}" >/dev/null 2>&1; then
+        CONTROLLER_READY=true
+        break
+    fi
+    if [[ $attempt -eq 1 ]]; then
+        log_warning "Controller not reachable yet. This is normal for fresh deploys (~10 min startup)."
+    fi
+    echo -e "  Attempt $attempt/$MAX_RETRIES - retrying in ${RETRY_INTERVAL}s..."
+    sleep $RETRY_INTERVAL
+done
+
+if [[ "$CONTROLLER_READY" != "true" ]]; then
+    log_error "Cannot reach CyPerf Controller at https://${CONTROLLER_API_IP} after $MAX_RETRIES attempts."
+    exit 1
+fi
+log_success "Controller is reachable"
+
+# Accept EULA (must happen BEFORE auth - EULA redirect blocks all API calls)
+log_info "Checking EULA status..."
+EULA_STATUS=$(curl -sk "https://${CONTROLLER_API_IP}/eula/v1/eula" 2>/dev/null || echo "[]")
+if echo "$EULA_STATUS" | grep -q '"accepted":false'; then
+    curl -sk "https://${CONTROLLER_API_IP}/eula/v1/eula/CyPerf" \
+        -X POST -H "Content-Type: application/json" -d '{"accepted": true}' >/dev/null 2>&1
+    log_success "EULA accepted"
+    sleep 3  # Brief pause for EULA to take effect
+else
+    log_info "EULA already accepted"
+fi
+
+# Wait for authentication to be ready (Keycloak may accept connections before auth works)
+log_info "Waiting for controller authentication (Keycloak)..."
+
+get_token() {
+    curl -sk "https://${CONTROLLER_API_IP}/auth/realms/keysight/protocol/openid-connect/token" \
+        -d "grant_type=password&client_id=admin-cli&username=admin&password=$(python3 -c 'import urllib.parse; print(urllib.parse.quote("CyPerf&Keysight#1"))')" \
+        2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])" 2>/dev/null || echo ""
+}
+
+AUTH_READY=false
+for attempt in $(seq 1 30); do
+    TOKEN=$(get_token || echo "")
+    if [[ -n "$TOKEN" ]]; then
+        AUTH_READY=true
+        break
+    fi
+    if [[ $attempt -eq 1 ]]; then
+        log_warning "Auth not ready yet. Controller may accept connections before Keycloak is initialized."
+    fi
+    echo -e "  Auth attempt $attempt/30 - retrying in 20s..."
+    sleep 20
+done
+
+if [[ "$AUTH_READY" != "true" ]]; then
+    log_error "Controller auth not ready after retries. Check controller status at https://${CONTROLLER_API_IP}"
+    exit 1
+fi
+log_success "Controller authentication ready"
+
+# ============================================================================
 # STEP 4: Clean stale agent registrations on controller
 # ============================================================================
 
@@ -163,13 +238,7 @@ log_info "Cleaning stale agent registrations on controller"
 echo "------------------------------------------------------------"
 echo ""
 
-get_token() {
-    curl -sk "https://${CONTROLLER_API_IP}/auth/realms/keysight/protocol/openid-connect/token" \
-        -d "grant_type=password&client_id=admin-cli&username=admin&password=$(python3 -c 'import urllib.parse; print(urllib.parse.quote("CyPerf&Keysight#1"))')" \
-        2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])" 2>/dev/null
-}
-
-TOKEN=$(get_token)
+TOKEN=$(get_token || echo "")
 if [[ -n "$TOKEN" ]]; then
     # Delete all existing sessions
     SESSIONS=$(curl -sk -H "Authorization: Bearer $TOKEN" \
@@ -414,7 +483,7 @@ log_info "Waiting for agents to register with controller..."
 
 AGENTS_READY=false
 for attempt in $(seq 1 20); do
-    TOKEN=$(get_token)
+    TOKEN=$(get_token || echo "")
     if [[ -n "$TOKEN" ]]; then
         AGENT_COUNT=$(curl -sk -H "Authorization: Bearer $TOKEN" \
             "https://${CONTROLLER_API_IP}/api/v2/agents" 2>/dev/null | python3 -c "

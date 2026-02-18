@@ -60,3 +60,53 @@ module "lab" {
   # Tags
   extra_tags = var.extra_tags
 }
+
+# ============================================================================
+# DOCUMENTATION GENERATOR
+# ============================================================================
+# Generates a deployment-specific lab guide and credentials file
+# Output: generated/<deployment_prefix>/
+# ============================================================================
+
+module "documentation" {
+  source = "../modules/documentation"
+
+  deployment_prefix = var.deployment_prefix
+  aws_region        = var.aws_region
+  aws_profile       = var.aws_profile
+  private_key_path  = var.private_key_path
+
+  # Keysight Products
+  clms_public_ip  = module.lab.clms_public_ip
+  clms_private_ip = module.lab.clms_private_ip
+  kvo_public_ip   = module.lab.kvo_public_ip
+  vpb_enabled     = var.vpb_enabled
+  vpb_public_ip   = module.lab.vpb_public_ip
+  vpb_interfaces  = module.lab.vpb_interfaces
+
+  # Workload VMs
+  ubuntu_public_ip  = module.lab.ubuntu_1_public_ip
+  windows_public_ip = module.lab.windows_public_ip
+
+  # Tool VMs
+  tool_linux_public_ip    = module.lab.tool_linux_public_ip
+  tool_linux_private_ip   = module.lab.tool_linux_private_ip
+  tool_windows_public_ip  = module.lab.tool_windows_public_ip
+  tool_windows_private_ip = module.lab.tool_windows_private_ip
+
+  # EKS
+  eks_enabled          = var.eks_enabled
+  eks_cluster_name     = module.lab.eks_cluster_name
+  eks_cluster_endpoint = module.lab.eks_cluster_endpoint
+  eks_kubeconfig_command = module.lab.eks_kubeconfig_command
+  ecr_repository_urls  = module.lab.ecr_repository_urls
+
+  # CyPerf
+  cyperf_enabled              = var.cyperf_enabled
+  cyperf_controller_public_ip  = var.cyperf_enabled ? aws_eip.cyperf_controller[0].public_ip : ""
+  cyperf_controller_private_ip = var.cyperf_enabled ? aws_instance.cyperf_controller[0].private_ip : ""
+
+  output_directory = "${path.module}/generated/${var.deployment_prefix}"
+
+  depends_on = [module.lab]
+}

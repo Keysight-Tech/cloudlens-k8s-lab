@@ -62,7 +62,14 @@ This lab teaches you to deploy and operate **Keysight CloudLens** for Kubernetes
 
 ## 1.1 AWS Marketplace Subscriptions
 
-Before deploying, ensure your AWS account has:
+Before deploying, ensure you have the following:
+
+- **Keysight Product License Activation Codes** for:
+  - **KVO** (VisionOrchestrator perpetual license)
+  - **CloudLens** (CloudLens Enterprise Edition subscription)
+  - **CyPerf** (if deploying CyPerf traffic generator)
+
+> **Important:** Each SE must have their own license activation codes. Contact your Keysight representative or SE manager to obtain them **before** starting the lab.
 
 - **AWS Marketplace subscriptions** for these Keysight products:
   - [CloudLens Manager (CLMS)](https://aws.amazon.com/marketplace) - Network visibility management
