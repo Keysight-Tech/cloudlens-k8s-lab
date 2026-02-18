@@ -28,14 +28,14 @@ module "lab" {
   private_key_path = var.private_key_path
 
   # Network CIDRs
-  vpc_cidr                    = "10.1.0.0/16"
-  management_subnet_cidr      = "10.1.1.0/24"
-  ingress_subnet_cidr         = "10.1.2.0/24"
-  egress_subnet_cidr          = "10.1.3.0/24"
-  eks_public_subnet_az1_cidr  = "10.1.4.0/24"
-  eks_private_subnet_az1_cidr = "10.1.5.0/24"
-  eks_public_subnet_az2_cidr  = "10.1.6.0/24"
-  eks_private_subnet_az2_cidr = "10.1.7.0/24"
+  vpc_cidr                    = var.vpc_cidr
+  management_subnet_cidr      = var.management_subnet_cidr
+  ingress_subnet_cidr         = var.ingress_subnet_cidr
+  egress_subnet_cidr          = var.egress_subnet_cidr
+  eks_public_subnet_az1_cidr  = var.eks_public_subnet_az1_cidr
+  eks_private_subnet_az1_cidr = var.eks_private_subnet_az1_cidr
+  eks_public_subnet_az2_cidr  = var.eks_public_subnet_az2_cidr
+  eks_private_subnet_az2_cidr = var.eks_private_subnet_az2_cidr
 
   # Security
   allowed_ssh_cidr   = var.allowed_ssh_cidr

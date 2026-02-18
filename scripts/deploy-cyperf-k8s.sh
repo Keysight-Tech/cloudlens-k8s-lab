@@ -445,12 +445,14 @@ echo ""
 # Deploy client agent
 log_info "Deploying CyPerf Client agent..."
 sed -e "s|\${CONTROLLER_PRIVATE_IP}|${CONTROLLER_PRIVATE_IP}|g" \
+    -e "s|\${CYPERF_AGENT_IMAGE}|${AGENT_IMAGE}|g" \
     "$MANIFESTS_DIR/cyperf-agent-client.yaml" | kubectl apply -f -
 log_success "Client agent pod created"
 
 # Deploy server agent + service
 log_info "Deploying CyPerf Server agent..."
 sed -e "s|\${CONTROLLER_PRIVATE_IP}|${CONTROLLER_PRIVATE_IP}|g" \
+    -e "s|\${CYPERF_AGENT_IMAGE}|${AGENT_IMAGE}|g" \
     "$MANIFESTS_DIR/cyperf-agent-server.yaml" | kubectl apply -f -
 log_success "Server agent pod + service created"
 

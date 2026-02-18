@@ -7,7 +7,7 @@
 # The client connects to the CyPerf Controller via management network,
 # then sends test traffic through nginx pods where CloudLens captures it.
 #
-# Image: public.ecr.aws/keysight/cyperf-agent:release7.0
+# Image: templated via ${CYPERF_AGENT_IMAGE} - substituted by deploy-cyperf-k8s.sh
 # Ref: https://github.com/Keysight/cyperf/tree/main/deployment/k8s
 # ============================================================================
 ---
@@ -22,7 +22,7 @@ metadata:
 spec:
   containers:
   - name: cyperf-agent
-    image: public.ecr.aws/keysight/cyperf-agent:release7.0
+    image: ${CYPERF_AGENT_IMAGE}
     env:
     - name: AGENT_CONTROLLER
       value: "${CONTROLLER_PRIVATE_IP}"

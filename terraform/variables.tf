@@ -110,6 +110,57 @@ variable "cyperf_controller_instance_type" {
   default     = "c5.2xlarge"
 }
 
+# Network CIDRs
+# Defaults match the single-lab deployment (10.1.0.0/16).
+# Override in terraform.tfvars if you need a different address space.
+variable "vpc_cidr" {
+  description = "CIDR block for the VPC"
+  type        = string
+  default     = "10.1.0.0/16"
+}
+
+variable "management_subnet_cidr" {
+  description = "CIDR for management subnet (CLMS, KVO, vPB mgmt)"
+  type        = string
+  default     = "10.1.1.0/24"
+}
+
+variable "ingress_subnet_cidr" {
+  description = "CIDR for vPB ingress subnet"
+  type        = string
+  default     = "10.1.2.0/24"
+}
+
+variable "egress_subnet_cidr" {
+  description = "CIDR for vPB egress subnet"
+  type        = string
+  default     = "10.1.3.0/24"
+}
+
+variable "eks_public_subnet_az1_cidr" {
+  description = "CIDR for EKS public subnet in AZ1"
+  type        = string
+  default     = "10.1.4.0/24"
+}
+
+variable "eks_private_subnet_az1_cidr" {
+  description = "CIDR for EKS private subnet in AZ1"
+  type        = string
+  default     = "10.1.5.0/24"
+}
+
+variable "eks_public_subnet_az2_cidr" {
+  description = "CIDR for EKS public subnet in AZ2"
+  type        = string
+  default     = "10.1.6.0/24"
+}
+
+variable "eks_private_subnet_az2_cidr" {
+  description = "CIDR for EKS private subnet in AZ2"
+  type        = string
+  default     = "10.1.7.0/24"
+}
+
 # Tags
 variable "extra_tags" {
   description = "Additional tags to apply to all resources"
